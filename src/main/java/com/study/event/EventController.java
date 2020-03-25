@@ -1,5 +1,6 @@
 package com.study.event;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,13 @@ public class EventController {
     @Autowired
     EventRepository eventRepository;
 
-    @PostMapping
-    public ResponseEntity createEvent(@RequestBody Event event){
+    @Autowired
+    ModelMapper modelMapper;
 
+    @PostMapping
+    public ResponseEntity createEvent(@RequestBody EventDto eventDto){
+
+        Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = this.eventRepository.save(event);
         URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
 
