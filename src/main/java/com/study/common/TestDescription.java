@@ -1,4 +1,4 @@
-package com.study.event;
+package com.study.common;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
