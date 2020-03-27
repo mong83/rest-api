@@ -1,10 +1,14 @@
 package com.study.event;
 
 
-import org.junit.jupiter.api.Test;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(JUnitParamsRunner.class)
 public class EventTest {
 
     @Test
@@ -34,37 +38,27 @@ public class EventTest {
     }
 
     @Test
-    public void  testFree(){
+    @Parameters(method = "paramsForTestFree")
+    public void testFree(int basePrice, int maxPrice , boolean isFree){
         Event event = Event.builder()
-                .basePrice(0)
-                .maxPrice(0)
+                .basePrice(basePrice)
+                .maxPrice(maxPrice)
                 .build();
 
         event.update();
 
-        assertThat(event.isFree()).isTrue();
+        assertThat(event.isFree()).isEqualTo(isFree);
 
-
-        event = Event.builder()
-                .basePrice(100)
-                .maxPrice(0)
-                .build();
-
-        event.update();
-
-        assertThat(event.isFree()).isFalse();
-
-
-        event = Event.builder()
-                .basePrice(0)
-                .maxPrice(100)
-                .build();
-
-        event.update();
-
-        assertThat(event.isFree()).isFalse();
     }
 
+    private Object[] paramsForTestFree(){
+        return new Object[]{
+                new Object[] {0,0,true},
+                new Object[] {100,0,false},
+                new Object[] {0,100,false},
+                new Object[] {100,200,false}
+        };
+    }
 
     @Test
     public void  testOffline(){
