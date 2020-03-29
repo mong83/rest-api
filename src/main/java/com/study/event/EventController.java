@@ -1,7 +1,9 @@
 package com.study.event;
 
+import com.study.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +36,12 @@ public class EventController {
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto , Errors errors){
 
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         eventValidator.validate(eventDto,errors);
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
 
@@ -55,8 +57,13 @@ public class EventController {
         eventResource.add(linkTo(EventController.class).withRel("query-events") );
        // eventResource.add(selfLinkBuilder.withSelfRel()); eventresource 만들때 넣어주도록 개선
         eventResource.add(selfLinkBuilder.withRel("update-event"));
+        eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
 
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }
 

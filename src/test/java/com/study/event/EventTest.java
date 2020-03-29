@@ -20,7 +20,7 @@ public class EventTest {
         assertThat(event).isNotNull();
 
     }
-
+    /*
     @Test
     public void javaBean(){
 
@@ -36,6 +36,7 @@ public class EventTest {
          assertThat(event.getName()).isEqualTo(description);
 
     }
+    */
 
     @Test
     @Parameters(method = "paramsForTestFree")
