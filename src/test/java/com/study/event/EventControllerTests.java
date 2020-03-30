@@ -1,6 +1,7 @@
 package com.study.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.common.BaseControllerTest;
 import com.study.common.RestDocsConfiguration;
 import com.study.common.TestDescription;
 import org.hamcrest.Matchers;
@@ -32,25 +33,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@Import(RestDocsConfiguration.class)
-@ActiveProfiles("test")
-public class EventControllerTests {
 
-    @Autowired
-    MockMvc mockMvc;
+public class EventControllerTests extends BaseControllerTest {
 
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Autowired
     EventRepository eventRepository;
 
-    @Autowired
-    ModelMapper modelMapper;
 
     @Test
     public void createEvent() throws Exception {
@@ -301,6 +290,7 @@ public class EventControllerTests {
                 .andExpect(jsonPath("_links.self").exists())
                 .andDo(document("update-event"))
         ;
+
     }
 
     /*
