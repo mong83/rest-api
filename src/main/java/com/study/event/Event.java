@@ -1,5 +1,6 @@
 package com.study.event;
 
+import com.study.accounts.Account;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +29,8 @@ public class Event {
         private boolean free;
         @Enumerated(EnumType.STRING)
         private EventStatus eventStatus;
+        @ManyToOne
+        private Account manager;
 
 
         public void update() {
