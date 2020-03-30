@@ -88,6 +88,37 @@ public class EventController {
         return ResponseEntity.ok(eventResource);
 
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateEvent(@PathVariable Integer id ,
+                                      @RequestBody @Valid EventDto eventDto,
+                                      Errors errors){
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if(optionalEvent.isPresent() ==false){
+            return ResponseEntity.notFound().build();
+        }
+
+        //DTO 의 validation check 예: not null
+        if(errors.hasErrors()){
+            return badRequest(errors);
+        }
+
+        //biz 로직검사를 통한 validation check
+        this.eventValidator.validate(eventDto,errors);
+
+        if(errors.hasErrors()){
+            return badRequest(errors);
+        }
+
+        Event existingEvent = optionalEvent.get();
+        this.modelMapper.map(eventDto,existingEvent);
+        Event savedEvent = this.eventRepository.save(existingEvent);
+        EventResource eventResource = new EventResource(savedEvent);
+        eventResource.add(new Link("/docs/index.html#resources-events-update").withRel("profile"));
+
+        return ResponseEntity.ok(eventResource);
+    }
+
     private ResponseEntity badRequest(Errors errors) {
         return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
