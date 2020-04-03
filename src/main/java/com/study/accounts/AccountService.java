@@ -1,5 +1,6 @@
 package com.study.accounts;
 
+import com.study.common.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +22,7 @@ public class AccountService implements UserDetailsService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
 
     public Account saveAccount(Account account){
         account.setPassword(passwordEncoder.encode(account.getPassword()));

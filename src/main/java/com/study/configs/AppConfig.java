@@ -1,8 +1,10 @@
 package com.study.configs;
 
 import com.study.accounts.Account;
+import com.study.accounts.AccountRepository;
 import com.study.accounts.AccountRole;
 import com.study.accounts.AccountService;
+import com.study.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -31,22 +33,38 @@ public class AppConfig
     }
 
 
+    @Bean
     public ApplicationRunner applicationRunner(){
         return new ApplicationRunner() {
 
             @Autowired
             AccountService accountService;
+            @Autowired
+            AppProperties appProperties;
 
             @Override
             public void run(ApplicationArguments args) throws Exception {
                 Set<AccountRole> accountRoles = Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet());
-                Account account = Account.builder()
-                        .email("06007@sk.com")
-                        .password("1234")
+                Account admin = Account.builder()
+                        .email(appProperties.getAdminUsername())
+                        .password(appProperties.getAdminPassword())
                         .roles(accountRoles)
                         .build();
-                accountService.saveAccount(account);
-                System.out.println("11111111111111111");
+
+               //  System.out.println("11111" + admin.getEmail());
+
+                accountService.saveAccount(admin);
+
+                Set<AccountRole> accountRole = Stream.of(AccountRole.USER).collect(Collectors.toSet());
+                Account user = Account.builder()
+                        .email(appProperties.getUserUsername())
+                        .password(appProperties.getUserPassword())
+                        .roles(accountRole)
+                        .build();
+
+                System.out.println("11111" + user.getEmail() +" " + user.getRoles());
+
+                accountService.saveAccount(user);
             }
         };
     }

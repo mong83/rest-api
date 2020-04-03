@@ -5,6 +5,7 @@ import com.study.accounts.Account;
 import com.study.accounts.AccountRepository;
 import com.study.accounts.AccountRole;
 import com.study.accounts.AccountService;
+import com.study.common.AppProperties;
 import com.study.common.BaseControllerTest;
 import com.study.common.RestDocsConfiguration;
 import com.study.common.TestDescription;
@@ -57,6 +58,9 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    AppProperties appProperties;
 
     @Before
     public void Setup(){
@@ -151,24 +155,20 @@ public class EventControllerTests extends BaseControllerTest {
     }
 
     private String getBearerToken() throws Exception {
+
         Set<AccountRole> accountRoles = Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet());
-        String username = "06007@sk.com";
-        String password = "1234";
 
         Account account = Account.builder()
-                .email(username)
-                .password(password)
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(accountRoles)
                 .build();
-
         accountService.saveAccount(account);
 
-        String clientId = "myApp";
-        String clientSecret = "pass";
         ResultActions perform = mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))//head를 만든거고!
-                .param("username", username)
-                .param("password", password)
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))//head를 만든거고!
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
                 .param("grant_type", "password"));
         String responsebody = perform.andReturn().getResponse().getContentAsString();
         Jackson2JsonParser parser = new Jackson2JsonParser();

@@ -3,6 +3,7 @@ package com.study.configs;
 import com.study.accounts.Account;
 import com.study.accounts.AccountRole;
 import com.study.accounts.AccountService;
+import com.study.common.AppProperties;
 import com.study.common.BaseControllerTest;
 import com.study.common.TestDescription;
 import org.junit.Test;
@@ -26,30 +27,30 @@ public class AuthServerConfigTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppProperties appProperties;
+
     @Test
     @TestDescription("인증 토큰을 발급 받는 테스트")
     public void getAuthToken() throws Exception {
 
-        Set<AccountRole> accountRoles = Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet());
-        String username = "06007@sk.com";
-        String password = "1234";
-        
+       /*AppConfig에서 run할때 admin / user 생성하므로 해당 코드유지하면 pk dup발생
+       Set<AccountRole> accountRoles = Stream.of(AccountRole.USER).collect(Collectors.toSet());
+
         Account account = Account.builder()
-                .email(username)
-                .password(password)
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(accountRoles)
                 .build();
-        
-        accountService.saveAccount(account);
-        
-        String clientId = "myApp";
-        String clientSecret = "pass";
-        mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId,clientSecret))
-                .param("username",username)
-                .param("password",password)
-                .param("grant_type","password")
-        )
+
+
+       accountService.saveAccount(account);
+       */
+       mockMvc.perform(post("/oauth/token")
+                .with(httpBasic(appProperties.getClientId(),appProperties.getClientSecret()))
+                .param("username",appProperties.getUserUsername())
+                .param("password",appProperties.getUserPassword())
+                .param("grant_type","password"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("access_token").exists());
