@@ -277,6 +277,31 @@ public class EventControllerTests extends BaseControllerTest {
                 ;
     }
 
+    @Test
+    @TestDescription("30개 이벤트를 10개씩 조회할때 , 2번째 페이지 조회하는 케이스 with인증정보")
+    public  void queryEventsWithAuthentication() throws  Exception{
+
+        //event 30개 저장
+        IntStream.range(0,30).forEach(i->{
+            this.generateEvent(i);
+        });
+
+        this.mockMvc.perform(get("/api/events")
+                .header(HttpHeaders.AUTHORIZATION,"Bearer" + getBearerToken())
+                .param("page","1")
+                .param("size","10")
+                .param("sort", "name,DESC"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("_links.create-event").exists())
+                .andDo(document("query-events"))
+        ;
+    }
+
     private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("event" + index)
